@@ -23,20 +23,14 @@ public sealed record ProfileSerializer : ServerPacketSerializer<ProfileArgs>
         foreach (var slot in NETWORKING_CONSTANTS.PROFILE_EQUIPMENTSLOT_ORDER)
         {
             args.Equipment.TryGetValue(slot, out var item);
-            if (item == null)
-            {
-                writer.WriteUInt16(ushort.MinValue);
-                writer.WriteByte(0x00);
-                continue;
-            }
 
-            var offsetSprite = item.Sprite;
+            var offsetSprite = item?.Sprite ?? 0;
 
             if (offsetSprite is not 0)
                 offsetSprite += NETWORKING_CONSTANTS.ITEM_SPRITE_OFFSET;
 
             writer.WriteUInt16(offsetSprite);
-            writer.WriteByte((byte)(item.Color));
+            writer.WriteByte((byte)(item?.Color ?? DisplayColor.Default));
         }
 
         writer.WriteByte((byte)args.SocialStatus);
@@ -45,11 +39,11 @@ public sealed record ProfileSerializer : ServerPacketSerializer<ProfileArgs>
         writer.WriteString8(args.Title ?? string.Empty);
         writer.WriteBoolean(args.GroupOpen);
         writer.WriteString8(args.GuildRank ?? string.Empty);
-        writer.WriteString8(args.JobClass != JobClass.None ? args.JobClass.ToString() : args.BaseClass.ToString());
+        writer.WriteString8(args.AdvClass != AdvClass.None ? args.AdvClass.ToString() : args.BaseClass.ToString());
         writer.WriteString8(args.GuildName ?? string.Empty);
-        writer.WriteByte((byte)Math.Min(byte.MaxValue, args.LegendMarks.Count));
+        writer.WriteByte((byte)args.LegendMarks.Count);
 
-        foreach (var mark in args.LegendMarks.Take(byte.MaxValue))
+        foreach (var mark in args.LegendMarks)
         {
             writer.WriteByte((byte)mark.Icon);
             writer.WriteByte((byte)mark.Color);

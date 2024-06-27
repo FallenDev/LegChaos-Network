@@ -12,7 +12,7 @@ public sealed record ProfileArgs : ISendArgs
     /// <summary>
     ///     The character's secondary class
     /// </summary>
-    public JobClass JobClass { get; set; }
+    public AdvClass AdvClass { get; set; }
     /// <summary>
     ///     The character's primary class
     /// </summary>
